@@ -228,4 +228,6 @@ return [
 
     ],
 
+    'sw_api_url' => env('SW_API_URL', 'https://swapi.co/api/'),
+
 ];

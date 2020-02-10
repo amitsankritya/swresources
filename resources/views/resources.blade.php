@@ -1,80 +1,59 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="text text-success mb-3">Fetch & Save</div>
-    <div class="row justify-content-center">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header sw-card-header"><strong>Fetch Star Wars Films and Peoples</strong></div>
-                <div class="card-body">
-                    <div class="row mt-3">
-                        <div class="col-md-12">
-                            <form id="sw-resource-form" onsubmit="return false">
-                                <div class="justify-content-center row">
-                                    <div class="col-md-6">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <label class="form-check-label"><strong>Resource Type:</strong></label>
-                                            </div>
-                                            <div class="col-md-8">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" name="resource_type" type="radio" id="input-film" value="film">
-                                                    <label class="form-check-label" for="input-film">Film</label>
-                                                </div>
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" name="resource_type" type="radio" id="input-character" value="people">
-                                                    <label class="form-check-label" for="input-character">People</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="row">
-                                            <div class="col-md-8">
-                                                <input id="resource_id" type="text" class="form-control" name="resource_id" value="" placeholder="Resource Id (eg. 1)">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <button type="submit" id="fetch" class="btn btn-outline-primary">Get</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
+    <div class="container">
+        <div class="text text-success mb-3">Saved Resources</div>
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header sw-card-header"><strong>Films</strong></div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Title</th>
+                                        <th>Director</th>
+                                        <th>Producer</th>
+                                        <th>Release Date</th>
+                                        <th>Episode Id</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="card mt-4" id="resources" style="display: none">
-                <div class="card-header sw-card-header">
-                    <strong style="vertical-align: -moz-middle-with-baseline; vertical-align: middle">Available Resources</strong>
-                    <button type="button" id="save" class="btn btn-outline-success float-right" data-resource="" data-resource_id="" onclick="saveResources(this)">Save Data</button>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div style="text-align: center; display: none" id="spinner">
-                                <div class="spinner-border text-info" role="status">
-                                    <span class="sr-only">Loading...</span>
-                                </div>
-                            </div>
-                            <div class="table-responsive">
-                                <table id="resource-table" class="table table-bordered table-hover text-center">
-                                    <thead class="thead-dark">
+                <div class="card mt-4" id="resources">
+                    <div class="card-header sw-card-header"><strong>Peoples</strong></div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Name</th>
+                                    <th>Gender</th>
+                                    <th>Birth Year</th>
+                                    <th>Height</th>
+                                    <th>Mass</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
 
-                                    </thead>
-                                    <tbody id="film-tbody">
-
-                                    </tbody>
-                                </table>
-                            </div>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection
 @section('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script>
@@ -184,12 +163,11 @@
                         $("#resource-table > tbody > tr").remove();
                         $("#resource-table tbody").append(row);
                     }
+
                     $("#fetch").attr("disabled", false);
                     $("#fetch").text("Get");
                     $("#save").attr("disabled", false);
                     $("#resources").show();
-                    $("#save").data("resource", resource);
-                    $("#save").data("resource_id", resource_id);
                 },
 
                 error: function (xhr) {
@@ -224,48 +202,8 @@
             return thead;
         }
 
-        function saveResources(obj) {
-            let resource = $(obj).data("resource");
-            let resource_id = $(obj).data("resource_id");
-            console.log(resource_id);
+        function saveResource() {
 
-            let url = '{{ url('/') }}';
-
-            if(resource === 'film') {
-                if (resource_id > 7) {
-                    //TODO: show error message
-                    return;
-                }
-                url += '/films';
-            } else {
-                if (resource_id > 87) {
-                    //TODO: show error message
-                    return;
-                }
-
-                url += '/characters';
-            }
-
-            $.ajax({
-                method: "POST",
-                url: url,
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: {
-                    "resource_id": resource_id
-                },
-                success: function (response) {
-
-                },
-
-                error: function (xhr) {
-                    $("#fetch").attr("disabled", false);
-                    $("#fetch").text("Get");
-                    console.log("error");
-                    console.log(xhr);
-                }
-            });
         }
     </script>
 @endsection
